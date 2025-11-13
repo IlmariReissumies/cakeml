@@ -12,13 +12,20 @@ Definition v2word_def:
   v2word (ValWord v) = Word v
 End
 
+Definition nameless_def:
+  nameless (Val v) = T ∧
+  nameless (RStruct vs) = EVERY nameless vs ∧
+  nameless (NStruct _ _) = F
+End
+        
 Theorem length_flatten_eq_size_of_shape:
-  !v.
+  ∀v.
+   nameless v ⇒ 
    LENGTH (flatten v) = size_of_shape (shape_of v)
 Proof
-  ho_match_mp_tac flatten_ind >> rw []
+  ho_match_mp_tac flatten_ind >> rw [nameless_def]
   >- (cases_on ‘w’ >> fs [shape_of_def, flatten_def, size_of_shape_def]) >>
-  fs [shape_of_def, flatten_def, size_of_shape_def] >>
+  fs [shape_of_def, flatten_def, size_of_shape_def, EVERY_MEM] >>
   fs [LENGTH_FLAT, MAP_MAP_o] >> fs[SUM_MAP_FOLDL] >>
   match_mp_tac FOLDL_CONG >> fs []
 QED
