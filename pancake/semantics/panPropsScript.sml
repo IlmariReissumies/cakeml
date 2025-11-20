@@ -30,20 +30,32 @@ Proof
   match_mp_tac FOLDL_CONG >> fs []
 QED
 
+Theorem dropWhile_cons_IMP:
+  dropWhile P xs = x::ys ==> ¬P x
+Proof
+  Induct_on ‘xs’ >> rw[dropWhile_def] >> simp[]
+QED
+
+
 Theorem mem_load_some_shape_eq:
-  ∀sh adr dm (m: 'a word -> 'a word_lab) v.
-  mem_load sh adr dm m = SOME v ==>
+  ∀sh adr dm (m: 'a word -> 'a word_lab) stcs v.
+  mem_load sh adr dm m stcs = SOME v ==>
   shape_of v = sh
 Proof
-  qsuff_tac ‘(∀sh adr dm (m: 'a word -> 'a word_lab) v.
-  mem_load sh adr dm m = SOME v ==> shape_of v = sh) /\
-  (∀sh adr dm (m: 'a word -> 'a word_lab) v.
-   mem_loads sh adr dm m = SOME v ==> MAP shape_of v = sh)’
+  qsuff_tac ‘(∀sh adr dm (m: 'a word -> 'a word_lab) stcs v.
+                mem_load sh adr dm m stcs = SOME v ==> shape_of v = sh) ∧
+             (∀sh adr dm (m: 'a word -> 'a word_lab) stcs v.
+                mem_loads sh adr dm m stcs = SOME v ==> MAP shape_of v = sh) ∧
+             (∀sh adr dm (m: 'a word -> 'a word_lab) stcs v.
+                mem_load_flds sh adr dm m stcs = SOME v ==> MAP (I ## shape_of) v = sh)’
   >- metis_tac [] >>
-  ho_match_mp_tac mem_load_ind >> rw [mem_load_def] >>
-  cases_on ‘sh’ >> fs [option_case_eq] >>
-  rveq >> TRY (cases_on ‘m adr’) >> fs [shape_of_def] >>
-  metis_tac []
+  ho_match_mp_tac mem_load_ind  >> rw [mem_load_def] >>
+  gvs [AllCaseEqs(), shape_of_def]
+  >- (fs [Once $ oneline shape_of_def, AllCaseEqs()] >> cases_on ‘m adr’ >> rw [])
+  >- metis_tac []
+  >- (imp_res_tac dropWhile_cons_IMP >> fs [])
+  >- metis_tac []
+  >- (imp_res_tac dropWhile_cons_IMP >> fs [])
 QED
 
 
