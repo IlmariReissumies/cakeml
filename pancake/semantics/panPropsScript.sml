@@ -379,23 +379,17 @@ QED
 
 Theorem list_rel_flatten_with_shape_length:
   !sh ns args v n.
-  LENGTH ns = LENGTH (FLAT (MAP flatten args))/\
-  size_of_shape (Comb sh) = LENGTH (FLAT (MAP flatten args)) /\
-  EL n args = v /\ n < LENGTH args /\ LENGTH args = LENGTH sh /\
-  LIST_REL (λsh arg. sh = shape_of arg) sh args ==>
-  LENGTH (EL n (with_shape sh ns)) = LENGTH (flatten v)
+    LENGTH ns = LENGTH (FLAT (MAP flatten args)) ∧
+    size_of_shape (Comb sh) = LENGTH (FLAT (MAP flatten args)) ∧
+    EL n args = v ∧ n < LENGTH args ∧ LENGTH args = LENGTH sh ∧
+    LIST_REL (λsh arg. sh = shape_of arg) sh args ∧
+    EVERY nameless args ==>
+    LENGTH (EL n (with_shape sh ns)) = LENGTH (flatten v)
 Proof
-  cheat
-(* Ry
-        Induct >> rw []
-  >- fs [with_shape_def, size_of_shape_def] >>
+  Induct_on ‘LIST_REL’ >> rw [] >>
   fs [with_shape_def, size_of_shape_def] >>
-  cases_on ‘n’ >> fs []
-  >-  fs [length_flatten_eq_size_of_shape] >>
-  last_x_assum match_mp_tac >>
-  ‘LENGTH (flatten arg) = size_of_shape (shape_of arg)’ by
-    fs [length_flatten_eq_size_of_shape] >>
-  fs []*)
+  cases_on ‘n’ >> rw [] >>
+  fs [length_flatten_eq_size_of_shape]
 QED
 
 Theorem list_rel_flatten_with_shape_flookup:
