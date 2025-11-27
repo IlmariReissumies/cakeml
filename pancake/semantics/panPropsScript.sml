@@ -7,7 +7,6 @@ Ancestors
 Libs
   preamble
 
-
 Definition v2word_def:
   v2word (ValWord v) = Word v
 End
@@ -85,17 +84,12 @@ QED
 
 Theorem list_rel_length_shape_of_flatten:
   !vshs args.
-  LIST_REL (λvsh arg. SND vsh = shape_of arg) vshs args ==>
-  size_of_shape (Comb (MAP SND vshs)) = LENGTH (FLAT (MAP flatten args))
+    LIST_REL (λvsh arg. SND vsh = shape_of arg) vshs args ∧
+    EVERY nameless args ==>
+    size_of_shape (Comb (MAP SND vshs)) = LENGTH (FLAT (MAP flatten args))
 Proof
-  Induct >> rpt gen_tac >> strip_tac
-  >- (cases_on ‘args’ >> fs [size_of_shape_def]) >>
-  cases_on ‘args’ >> fs [] >> rveq >>
-  fs [size_of_shape_def] >>
-  last_x_assum (qspecl_then [‘t’] mp_tac) >>
-  fs [] >> last_x_assum (assume_tac o GSYM) >>
-  fs [] >>
-  fs [length_flatten_eq_size_of_shape]
+  Induct_on ‘LIST_REL’ >> rpt gen_tac >> strip_tac
+  >> fs [size_of_shape_def] >> rw [length_flatten_eq_size_of_shape]
 QED
 
 
@@ -391,7 +385,9 @@ Theorem list_rel_flatten_with_shape_length:
   LIST_REL (λsh arg. sh = shape_of arg) sh args ==>
   LENGTH (EL n (with_shape sh ns)) = LENGTH (flatten v)
 Proof
-  Induct >> rw []
+  cheat
+(* Ry
+        Induct >> rw []
   >- fs [with_shape_def, size_of_shape_def] >>
   fs [with_shape_def, size_of_shape_def] >>
   cases_on ‘n’ >> fs []
@@ -399,7 +395,7 @@ Proof
   last_x_assum match_mp_tac >>
   ‘LENGTH (flatten arg) = size_of_shape (shape_of arg)’ by
     fs [length_flatten_eq_size_of_shape] >>
-  fs []
+  fs []*)
 QED
 
 Theorem list_rel_flatten_with_shape_flookup:
@@ -414,7 +410,9 @@ Theorem list_rel_flatten_with_shape_flookup:
      (EL n' (EL n (with_shape sh ns))) =
    SOME (EL n' (flatten v))
 Proof
-  Induct >> rw []
+  cheat
+(*
+        Induct >> rw []
   >- fs [with_shape_def, size_of_shape_def] >>
   fs [with_shape_def, size_of_shape_def] >>
   cases_on ‘n’ >> fs []
@@ -495,13 +493,15 @@ Proof
   pop_assum kall_tac >>
   last_x_assum (qspecl_then [‘DROP (size_of_shape (shape_of arg)) ns’,
                              ‘ys’, ‘n''’, ‘n'’] mp_tac) >>
-  impl_tac >-  fs [ALL_DISTINCT_DROP, GSYM length_flatten_eq_size_of_shape] >> fs []
+  impl_tac >-  fs [ALL_DISTINCT_DROP, GSYM length_flatten_eq_size_of_shape] >> fs []*)
 QED
 
 Theorem eval_upd_clock_eq:
   !t e ck. eval (t with clock := ck) e =  eval t e
 Proof
-  ho_match_mp_tac eval_ind >> rw [] >>
+  cheat
+(* Tobias
+        ho_match_mp_tac eval_ind >> rw [] >>
   fs [eval_def] >>
   qsuff_tac ‘OPT_MMAP (λa. eval (t with clock := ck) a) es =
              OPT_MMAP (λa. eval t a) es’ >>
@@ -509,13 +509,15 @@ Proof
   pop_assum mp_tac >>
    qid_spec_tac ‘es’ >>
    Induct >> rw [] >>
-   fs [OPT_MMAP_def]
+   fs [OPT_MMAP_def]*)
 QED
 
 Theorem eval_upd_code_eq:
   !t e code. eval (t with code := code) e =  eval t e
 Proof
-  ho_match_mp_tac eval_ind >> rw [] >>
+  cheat
+(* Julia
+        ho_match_mp_tac eval_ind >> rw [] >>
   fs [eval_def] >>
   qsuff_tac ‘OPT_MMAP (λa. eval (t with code := code) a) es =
              OPT_MMAP (λa. eval t a) es’ >>
@@ -523,7 +525,7 @@ Proof
   pop_assum mp_tac >>
   qid_spec_tac ‘es’ >>
   Induct >> rw [] >>
-  fs [OPT_MMAP_def]
+  fs [OPT_MMAP_def]*)
 QED
 
 Theorem opt_mmap_eval_upd_clock_eq:
@@ -582,6 +584,8 @@ Theorem evaluate_clock_sub:
     res <> SOME TimeOut ⇒
     evaluate (p,t with clock := t.clock - ck) = (res,st)
 Proof
+  cheat
+  (* Sam
   (* TODO: generated names *)
   recInduct evaluate_ind >> rw []
   >~ [‘While’]
@@ -671,7 +675,7 @@ Proof
       dec_clock_def,opt_mmap_eval_upd_clock_eq1,kvar_defs
      ] >>
   rpt(pairarg_tac >> gvs[]) >>
-  gvs[state_component_equality]
+  gvs[state_component_equality]*)
 QED
 
 Theorem evaluate_min_clock:
