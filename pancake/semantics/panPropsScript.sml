@@ -29,6 +29,7 @@ Proof
   match_mp_tac FOLDL_CONG >> fs []
 QED
 
+(* TODO: move *)
 Theorem dropWhile_cons_IMP:
   dropWhile P xs = x::ys ==> ¬P x
 Proof
