@@ -16,10 +16,10 @@ Definition nameless_def:
   nameless (RStruct vs) = EVERY nameless vs ∧
   nameless (NStruct _ _) = F
 End
-        
+
 Theorem length_flatten_eq_size_of_shape:
   ∀v.
-   nameless v ⇒ 
+   nameless v ⇒
    LENGTH (flatten v) = size_of_shape (shape_of v)
 Proof
   ho_match_mp_tac flatten_ind >> rw [nameless_def]
@@ -490,20 +490,39 @@ Proof
   impl_tac >-  fs [ALL_DISTINCT_DROP, GSYM length_flatten_eq_size_of_shape] >> fs []*)
 QED
 
+Theorem alkjbljkb:
+  case f x of [] => ARB | x ::xs => ARB ARB = T
+Proof
+  PURE_TOP_CASE_TAC
+  Cases_on ‘f x’
+QED
+
 Theorem eval_upd_clock_eq:
   !t e ck. eval (t with clock := ck) e =  eval t e
 Proof
-  cheat
-(* Tobias
-        ho_match_mp_tac eval_ind >> rw [] >>
+  ho_match_mp_tac eval_ind >> rw []
+  >~ [‘NStruct’]
+  >- (fs [eval_def] >>
+      pairarg_tac >> gvs[] >>
+      PURE_TOP_CASE_TAC >> gvs[] >>
+      pairarg_tac >> gvs[] >>
+      rw[] >>
+      rename1 ‘OPT_MMAP _ es’ >>
+      qsuff_tac ‘OPT_MMAP (λa. eval (t with clock := ck) a) es =
+                 OPT_MMAP (λa. eval t a) es’ >>
+      fs [] >>
+      pop_assum mp_tac >>
+      qid_spec_tac ‘es’ >>
+      Induct >> rw [] >>
+      fs [OPT_MMAP_def]) >>
   fs [eval_def] >>
   qsuff_tac ‘OPT_MMAP (λa. eval (t with clock := ck) a) es =
              OPT_MMAP (λa. eval t a) es’ >>
   fs [] >>
   pop_assum mp_tac >>
-   qid_spec_tac ‘es’ >>
-   Induct >> rw [] >>
-   fs [OPT_MMAP_def]*)
+  qid_spec_tac ‘es’ >>
+  Induct >> rw [] >>
+  fs [OPT_MMAP_def]
 QED
 
 Theorem eval_upd_code_eq:
