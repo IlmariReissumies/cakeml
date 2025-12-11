@@ -491,32 +491,21 @@ Proof
   impl_tac >-  fs [ALL_DISTINCT_DROP, GSYM length_flatten_eq_size_of_shape] >> fs []*)
 QED
 
+Theorem eval_upd_clock_eq':
+  ∀es. (∀e. MEM e es ⇒ ∀ck. eval (t with clock := ck) e = eval t e ) ⇒ OPT_MMAP (λa. eval (t with clock := ck) a) es = OPT_MMAP (λa. eval t a) es
+Proof
+   Induct >> rw []
+QED
+
+        
 Theorem eval_upd_clock_eq:
   !t e ck. eval (t with clock := ck) e =  eval t e
 Proof
-  ho_match_mp_tac eval_ind >> rw []
-  >~ [‘NStruct’]
-  >- (fs [eval_def] >>
-      pairarg_tac >> gvs[] >>
-      PURE_TOP_CASE_TAC >> gvs[] >>
-      pairarg_tac >> gvs[] >>
-      rw[] >>
-      rename1 ‘OPT_MMAP _ es’ >>
-      qsuff_tac ‘OPT_MMAP (λa. eval (t with clock := ck) a) es =
-                 OPT_MMAP (λa. eval t a) es’ >>
-      fs [] >>
-      pop_assum mp_tac >>
-      qid_spec_tac ‘es’ >>
-      Induct >> rw [] >>
-      fs [OPT_MMAP_def]) >>
-  fs [eval_def] >>
-  qsuff_tac ‘OPT_MMAP (λa. eval (t with clock := ck) a) es =
-             OPT_MMAP (λa. eval t a) es’ >>
-  fs [] >>
-  pop_assum mp_tac >>
-  qid_spec_tac ‘es’ >>
-  Induct >> rw [] >>
-  fs [OPT_MMAP_def]
+  ho_match_mp_tac eval_ind >> rw [] >> fs[eval_def, eval_upd_clock_eq'] >> 
+  pairarg_tac >> gvs[] >>
+  PURE_TOP_CASE_TAC >> gvs[] >>
+  pairarg_tac >> gvs[] >> rw[] >>
+  fs[eval_upd_clock_eq']
 QED
 
 Theorem eval_upd_code_eq:
