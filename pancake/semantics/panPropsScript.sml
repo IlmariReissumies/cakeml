@@ -508,20 +508,21 @@ Proof
   fs[eval_upd_clock_eq']
 QED
 
+Theorem eval_upd_code_eq':
+  ∀es. (∀e. MEM e es ⇒ ∀code. eval (t with code := code) e = eval t e) ⇒ OPT_MMAP (λa. eval (t with code := code) a) es = OPT_MMAP (λa. eval t a) es
+Proof
+  Induct >> rw []
+QED
+        
+        
 Theorem eval_upd_code_eq:
   !t e code. eval (t with code := code) e =  eval t e
 Proof
-  cheat
-(* Julia
-        ho_match_mp_tac eval_ind >> rw [] >>
-  fs [eval_def] >>
-  qsuff_tac ‘OPT_MMAP (λa. eval (t with code := code) a) es =
-             OPT_MMAP (λa. eval t a) es’ >>
-  fs [] >>
-  pop_assum mp_tac >>
-  qid_spec_tac ‘es’ >>
-  Induct >> rw [] >>
-  fs [OPT_MMAP_def]*)
+  ho_match_mp_tac eval_ind >> rw [] >> fs[eval_def, eval_upd_code_eq'] >>
+  pairarg_tac >> gvs[] >>
+  PURE_TOP_CASE_TAC >> gvs[] >>
+  pairarg_tac >> gvs[] >> rw[] >>
+  fs[eval_upd_code_eq']
 QED
 
 Theorem opt_mmap_eval_upd_clock_eq:
