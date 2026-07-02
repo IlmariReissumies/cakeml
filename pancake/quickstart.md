@@ -169,7 +169,7 @@ The compiler output expects the following to exist within the C file:
 - memory allocation for stack and heap, with pointers in the matching `extern` variables. See `basis_ffi.c` implementation for size constrains
 - a call to `cml_main()`
 
-C file requirements outside of this will depend on what your file needs.
+The C file may need further additions depending on your use case.
 
 For new FFI function definitions, reference the existing definition signatures and naming.
 
